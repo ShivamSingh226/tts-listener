@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
 import asyncio
 import websockets
-
+import os
 app = Flask(__name__)
 
-TTS_SERVER_URI = "ws://tts-executer.onrender.com/wss"  # Update this if your TTS server is hosted externally
+TTS_SERVER_URI = "wss://tts-executer.onrender.com/ws"  # Update this if your TTS server is hosted externally
 
 async def send_text_to_tts(text):
     async with websockets.connect(TTS_SERVER_URI, max_size=None) as websocket:
@@ -27,6 +27,6 @@ def webhook():
     return jsonify({"status": "success", "message": "Text forwarded to TTS server"}), 200
 
 if __name__ == "__main__":
-    app.run(port=5001)
-    print("✅ Flask server is up and running on http://localhost:5000")
-    app.run(host="0.0.0.0",port=5001)
+    port = int(os.environ.get("PORT", 5000))  # Render needs $PORT
+    print(f"✅ Flask server is up and running on 0.0.0.0:{port}")
+    app.run(host="0.0.0.0", port=port)
