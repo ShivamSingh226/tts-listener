@@ -14,20 +14,36 @@ async def get_tts_audio(text: str):
 
 @app.route("/")
 def index():
-    return render_template("index.html")  # serve the HTML page
+    return render_template("index.html")
+
+@app.route("/play")
+def play():
+    return render_template("play.html")
 
 @app.route("/tts", methods=["POST"])
 def tts():
-    data = request.get_json()
-    text = data.get("text", "")
+    data = request.get_json(force=True)
+
+    text = None
+
+    # Case 1: simple payload { "text": "..." }
+    if "text" in data:
+        text = data.get("text")
+
+    # Case 2: Tiledesk payload { "payload": { "senderFullname": "...", "text": "..." } }
+    elif "payload" in data:
+        payload = data.get("payload", {})
+        if payload.get("senderFullname") == "tiledesk-tts":
+            text = payload.get("text")
+
     if not text:
-        return {"error": "No text provided"}, 400
+        return {"error": "No valid TTS text provided"}, 400
 
     audio_bytes = asyncio.run(get_tts_audio(text))
 
     return Response(
         audio_bytes,
-        mimetype="audio/wav"  # browser will treat this as audio
+        mimetype="audio/wav"
     )
 
 if __name__ == "__main__":

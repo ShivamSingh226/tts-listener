@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Live TTS</title>
+    <title>Live TTS - Manual Test</title>
 </head>
 <body>
-    <h1>Live TTS Playback</h1>
+    <h1>Live TTS Playback (Manual Input)</h1>
     <input type="text" id="textInput" placeholder="Enter text">
     <button id="playBtn">Play</button>
     <audio id="audioPlayer" controls></audio>
@@ -21,7 +21,7 @@
         const response = await fetch("/tts", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text })
+            body: JSON.stringify({ text }) // simple format
         });
 
         if (!response.ok) {
