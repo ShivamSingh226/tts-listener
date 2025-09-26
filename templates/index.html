@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live TTS</title>
+</head>
+<body>
+    <h1>Live TTS Playback</h1>
+    <input type="text" id="textInput" placeholder="Enter text">
+    <button id="playBtn">Play</button>
+    <audio id="audioPlayer" controls></audio>
+
+    <script>
+    const playBtn = document.getElementById("playBtn");
+    const textInput = document.getElementById("textInput");
+    const audioPlayer = document.getElementById("audioPlayer");
+
+    playBtn.onclick = async () => {
+        const text = textInput.value;
+        if (!text) return;
+
+        const response = await fetch("/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text })
+        });
+
+        if (!response.ok) {
+            alert("Error fetching TTS");
+            return;
+        }
+
+        const audioBlob = await response.blob();
+        audioPlayer.src = URL.createObjectURL(audioBlob);
+        audioPlayer.play();
+    };
+    </script>
+</body>
+</html>
